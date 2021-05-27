@@ -1,22 +1,28 @@
 
 # pip install imvickykumar999
 # C:\Users\Vicky\anaconda3\Lib\site-packages\vicksbase
+# https://stackoverflow.com/questions/1802971/nameerror-name-self-is-not-defined
 
 import json
 from datetime import datetime
+import socket
 
-dt = datetime.now()
-d = str(dt).split()[0]
-t = str(dt).split()[1].split('.')[0]
+# print("Your Computer Name is:" + hostname)
+# print("Your Computer IP Address is:" + IPAddr)
 
-class Vicks:
+class vicks:
     def __init__(self,
+                password,
+                name = 'Anonymous',
                 link = 'https://chatting-c937e-default-rtdb.firebaseio.com/',
-                name = 'anonymous'):
+                ):
 
         try:
-            from vicksbase import firebase as f
             self.link = link
+            self.name = name
+            self.password = password
+
+            from vicksbase import firebase as f
             self.firebase_obj = f.FirebaseApplication(self.link, None)
             # print(self.pull(child = '/'))
 
@@ -25,28 +31,83 @@ class Vicks:
             print('try: pip install imvickykumar999')
 
     def show(self):
-        return self.link
+        return self.link, self.name
 
-    def pull(self, child = 'Group/Chat'):
-        result = self.firebase_obj.get(f'{child}', None)
-        return result
+    def pull(self,
+             child = None):
 
-    def push(self, data = 1, child = 'Group/Chat'):
-        self.firebase_obj.put('/', child, data)
-        return self.pull(child = '/')
+        if self.password == '@Hey_Vicks':
+            dt = datetime.now()
+            d = str(dt).split()[0]
+
+            if child == None:
+                child = f'Group/Chat/{d}'
+
+            result = self.firebase_obj.get(f'{child}', None)
+            return result
+
+        else:
+            error = '\n...Wrong Credentials !!!\n'
+            print(error)
+            return error
+
+    def push(self, data = None,
+                   child = None):
+
+        if self.password == '@Hey_Vicks':
+            dt = datetime.now()
+            d = str(dt).split()[0]
+            t = str(dt).split()[1].split('.')[0]
+
+            hostname = socket.gethostname()
+            IPAddr = socket.gethostbyname(hostname)
+            ip = '-'.join(IPAddr.split('.'))
+
+            if child == None:
+                child = f"Group/Chat/{d}/{t}&{str(hostname+'*'+ip)}@{self.name}"
+
+            if data == None:
+                data = f"...hi, I am {self.name}"
+
+            self.firebase_obj.put('/', child, data)
+            # return self.pull(child = '/')
+
+        else:
+            error = '\n...Wrong Credentials !!!\n'
+            print(error)
+            return error
 
     def remove(self, child = 'A/B/C/led2'): # danger to run... loss of data.
-        data = self.firebase_obj.delete('/', child)
-        return self.pull(child = '/')
 
-    def save(self, child = 'Group/Chat'):
-        with open('data.json', 'w', encoding ='utf8') as json_file:
-            json.dump(self.pull(child), json_file, ensure_ascii = False)
+        if self.password == '@Hey_Vicks':
+            data = self.firebase_obj.delete('/', child)
+            # return self.pull(child = '/')
 
+        else:
+            error = '\n...Wrong Credentials !!!\n'
+            print(error)
+            return error
 
+    def save(self,
+             child = None):
+
+        if self.password == '@Hey_Vicks':
+            dt = datetime.now()
+            d = str(dt).split()[0]
+
+            if child == None:
+                child = f'Group/Chat/{d}'
+
+            with open('data.json', 'w', encoding ='utf8') as json_file:
+                json.dump(self.pull(child), json_file, ensure_ascii = False)
+
+        else:
+            error = '\n...Wrong Credentials !!!\n'
+            print(error)
+            return error
 
 # link = 'https://chatting-c937e-default-rtdb.firebaseio.com/'
-# obj = Vicks(link)
+# obj = vicks(link)
 
 # f = obj.show()
 # f = obj.pull()
